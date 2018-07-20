@@ -16992,6 +16992,7 @@ license = stdenv.lib.licenses.mit;
 , binary
 , bytestring
 , cardano-sl-core
+, cardano-sl-ssc
 , cardano-sl-util
 , containers
 , contravariant
@@ -17046,6 +17047,7 @@ base
 binary
 bytestring
 cardano-sl-core
+cardano-sl-ssc
 cardano-sl-util
 containers
 cryptonite
