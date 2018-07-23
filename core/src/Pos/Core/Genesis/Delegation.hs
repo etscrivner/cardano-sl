@@ -12,9 +12,12 @@ import           Control.Monad.Except (MonadError (throwError))
 import qualified Data.HashMap.Strict as HM
 import           Formatting (build, sformat, (%))
 import           Serokell.Util (allDistinct)
+import           Text.JSON.Canonical (FromJSON (..), ReportSchemaErrors,
+                     ToJSON (..))
 
 import           Pos.Core.Common (StakeholderId, addressHash)
 import           Pos.Core.Delegation (ProxySKHeavy)
+import           Pos.Core.Genesis.Canonical (wrapConstructor)
 import           Pos.Crypto.Signing (ProxySecretKey (..), isSelfSignedPsk)
 
 -- | This type contains genesis state of heavyweight delegation. It
@@ -28,6 +31,14 @@ import           Pos.Crypto.Signing (ProxySecretKey (..), isSelfSignedPsk)
 newtype GenesisDelegation = UnsafeGenesisDelegation
     { unGenesisDelegation :: HashMap StakeholderId ProxySKHeavy
     } deriving (Show, Eq, Container)
+
+instance Monad m => ToJSON m GenesisDelegation where
+    toJSON = toJSON . unGenesisDelegation
+
+instance ReportSchemaErrors m => FromJSON m GenesisDelegation where
+    fromJSON val = do
+        psks <- fromJSON val
+        wrapConstructor $ recreateGenesisDelegation psks
 
 -- | Empty 'GenesisDelegation'.
 noGenesisDelegation :: GenesisDelegation
